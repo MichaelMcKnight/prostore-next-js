@@ -63,5 +63,11 @@ export const insertCartSchema = z.object({
   shippingPrice: currency,
   taxPrice: currency,
   sessionCartId: z.string().min(1, "Session cart ID is required"),
-  userId: z.string().optional(),
+  userId: z.string().nullable().optional(),
+});
+
+export const cartSchema = insertCartSchema.extend({
+  id: z.string(),
+  createdAt: z.coerce.date(),
+  userId: z.string().nullable().optional(), // covers null from DB and undefined for guests
 });
