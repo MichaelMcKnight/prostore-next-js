@@ -1,6 +1,7 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { ZodError } from "zod";
+import { Decimal } from "@prisma/client/runtime/client";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -11,10 +12,25 @@ export function convertToPlainObject<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
 }
 
-// Format number with decimal places
-export function formatNumberWithDecimal(num: number): string {
-  const [int, decimal] = num.toString().split(".");
-  return decimal ? `${int}.${decimal.padEnd(2, "0")}` : `${int}.00`;
+// Handle Decimal to frontend conversions.
+export function serializePrisma<T>(data: T): T {
+  if (data === null || data === undefined) return data;
+
+  if (data instanceof Decimal) {
+    return data.toString() as unknown as T;
+  }
+
+  if (Array.isArray(data)) {
+    return data.map(serializePrisma) as unknown as T;
+  }
+
+  if (typeof data === "object") {
+    return Object.fromEntries(
+      Object.entries(data).map(([key, value]) => [key, serializePrisma(value)])
+    ) as T;
+  }
+
+  return data;
 }
 
 // Function to handle prisma errors deeper

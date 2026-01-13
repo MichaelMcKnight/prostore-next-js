@@ -62,9 +62,6 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
 
     return { success: true, message: "User registered successfully!" };
   } catch (error) {
-    console.log("PRISMA ERROR RAW:", error);
-    console.log("meta:", (error as any)?.meta);
-    console.log("target:", (error as any)?.meta?.target);
     if (isRedirectError(error)) {
       throw error;
     }

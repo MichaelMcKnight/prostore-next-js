@@ -1,7 +1,7 @@
 "use server";
 import { prisma } from "@/db/client";
 import "dotenv/config";
-import { convertToPlainObject } from "../utils";
+import { serializePrisma } from "../utils";
 import { LATEST_PRODUCTS_LIMIT } from "../constants";
 
 // Get latest products
@@ -11,18 +11,14 @@ export async function getLatestProducts() {
     orderBy: { createdAt: "desc" },
   });
 
-  const normalized = data.map((p) => ({
-    ...p,
-    price: p.price.toString(), // Decimal -> string
-    rating: p.rating.toString(), // Decimal -> string
-  }));
-
-  return convertToPlainObject(normalized);
+  return serializePrisma(data);
 }
 
 // Get single product by slug
 export async function getProductABySlug(slug: string) {
-  return await prisma.product.findFirst({
+  const product = await prisma.product.findFirst({
     where: { slug: slug },
   });
+
+  return serializePrisma(product);
 }
