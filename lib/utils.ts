@@ -12,27 +12,6 @@ export function convertToPlainObject<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
 }
 
-// Handle Decimal to frontend conversions.
-export function serializePrisma<T>(data: T): T {
-  if (data === null || data === undefined) return data;
-
-  if (data instanceof Decimal) {
-    return data.toString() as unknown as T;
-  }
-
-  if (Array.isArray(data)) {
-    return data.map(serializePrisma) as unknown as T;
-  }
-
-  if (typeof data === "object") {
-    return Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [key, serializePrisma(value)])
-    ) as T;
-  }
-
-  return data;
-}
-
 // Function to handle prisma errors deeper
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function prismaUniqueField(error: any): string | null {
