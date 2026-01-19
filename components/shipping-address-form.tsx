@@ -32,7 +32,7 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
   const [isPending, startTransition] = useTransition();
 
   const onSubmit: SubmitHandler<z.infer<typeof shippingAddressSchema>> = async (
-    values
+    values,
   ) => {
     startTransition(async () => {
       const res = await updateUserAddress(values);

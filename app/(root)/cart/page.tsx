@@ -1,4 +1,4 @@
-import CartTable from "@/components/shared/cart/cart-table";
+import CartTable from "@/components/cart-table";
 import { getMyCart } from "@/lib/actions/cart-actions";
 
 export const metadata = {

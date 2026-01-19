@@ -54,6 +54,25 @@ export const authConfig = {
     },
 
     authorized({ request, auth }: any) {
+      // Array of regex patterns to protect routes
+      const protectedRoutes = [
+        /\/shipping-address/,
+        /\/payment-method/,
+        /\/place-order/,
+        /\/profile/,
+        /\/user\/(.*)/,
+        /\/order\/(.*)/,
+        /\/admin/,
+      ];
+
+      // Get pathname from req URL object
+      const { pathname } = request.nextUrl;
+
+      // Check if the requested path matches any protected route
+      if (!auth && protectedRoutes.some((pattern) => pattern.test(pathname))) {
+        return false;
+      }
+
       if (!request.cookies.get("sessionCartId")) {
         const sessionCartId = crypto.randomUUID();
 

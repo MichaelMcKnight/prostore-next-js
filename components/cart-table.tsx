@@ -74,14 +74,14 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
                         onClick={() => {
                           startTransition(async () => {
                             const result = await removeItemFromCart(
-                              item.productId
+                              item.productId,
                             );
                             if (result.success) {
                               toast.success("Item removed from cart");
                               router.refresh();
                             } else {
                               toast.error(
-                                result.message || "Failed to remove item"
+                                result.message || "Failed to remove item",
                               );
                             }
                           });
@@ -107,7 +107,7 @@ const CartTable = ({ cart }: { cart?: Cart }) => {
                               router.refresh();
                             } else {
                               toast.error(
-                                result.message || "Failed to add item"
+                                result.message || "Failed to add item",
                               );
                             }
                           });

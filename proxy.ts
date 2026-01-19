@@ -1,7 +1,9 @@
-// middleware.ts
+// proxy.ts
 import NextAuth from "next-auth";
 import { authConfig } from "@/auth.config";
 
-export const proxy = async () => {
-  NextAuth(authConfig);
+export default NextAuth(authConfig).auth;
+
+export const config = {
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };
