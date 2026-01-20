@@ -1,10 +1,12 @@
 import { z } from "zod";
+import { PAYMENT_METHODS } from "./constants";
+
 const currency = z
   .string()
   .trim()
   .regex(
     /^\d+(\.\d{1,2})?$/,
-    "Price must be a valid amount (up to 2 decimals)."
+    "Price must be a valid amount (up to 2 decimals).",
   )
   .transform((v) => {
     const [i, d = ""] = v.split(".");
@@ -82,3 +84,13 @@ export const shippingAddressSchema = z.object({
   lat: z.number().optional(),
   lng: z.number().optional(),
 });
+
+// Schema for payment method
+export const paymentMethodSchema = z
+  .object({
+    type: z.string().min(1, "Payment method is required"),
+  })
+  .refine((data) => PAYMENT_METHODS.includes(data.type), {
+    path: ["type"],
+    message: "Invalid payment method",
+  });

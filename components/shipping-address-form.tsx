@@ -40,7 +40,7 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
         toast.error(res.message);
       }
 
-      router.push("/payment");
+      router.push("/payment-method");
     });
   };
 
