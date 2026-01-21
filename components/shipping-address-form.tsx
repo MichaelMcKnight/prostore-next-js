@@ -1,25 +1,28 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
-import { ShippingAddress } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ControllerRenderProps, useForm, SubmitHandler } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+
+import { ShippingAddress } from "@/types";
 import { shippingAddressSchema } from "@/lib/validators";
 import { shippingAddressDefaultValues } from "@/lib/constants";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Loader } from "lucide-react";
 import { updateUserAddress } from "@/lib/actions/user.actions";
+
+import { Button } from "@/components/ui/button";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { ArrowRight, Loader } from "lucide-react";
+
+const FORM_ID = "shipping-address-form";
 
 const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
   const router = useRouter();
@@ -31,156 +34,152 @@ const ShippingAddressForm = ({ address }: { address: ShippingAddress }) => {
 
   const [isPending, startTransition] = useTransition();
 
-  const onSubmit: SubmitHandler<z.infer<typeof shippingAddressSchema>> = async (
-    values,
-  ) => {
+  function onSubmit(values: z.infer<typeof shippingAddressSchema>) {
     startTransition(async () => {
       const res = await updateUserAddress(values);
+
       if (!res.success) {
         toast.error(res.message);
+        return;
       }
 
       router.push("/payment-method");
     });
-  };
+  }
 
   return (
-    <>
-      <div className="max-w-md mx-auto space-y-4">
-        <h1 className="h2-bold mt-4">Shipping Address</h1>
-        <p className="text-sm text-muted-foreground">
-          Please enter your shipping address details.
-        </p>
-        <Form {...form}>
-          <form
-            action="POST"
-            className="space-y-4"
-            onSubmit={form.handleSubmit(onSubmit)}
-          >
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="fullName"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "fullName"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Full Name</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter full name" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+    <div className="mx-auto max-w-md space-y-4">
+      <h1 className="h2-bold mt-4">Shipping Address</h1>
+      <p className="text-sm text-muted-foreground">
+        Please enter your shipping address details.
+      </p>
+
+      <form
+        id={FORM_ID}
+        noValidate
+        className="space-y-4"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <FieldGroup>
+          <Controller
+            name="fullName"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`${FORM_ID}-fullName`}>
+                  Full Name
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`${FORM_ID}-fullName`}
+                  placeholder="Enter full name"
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="name"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
                 )}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="streetAddress"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "streetAddress"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Address</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter Address" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="streetAddress"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`${FORM_ID}-streetAddress`}>
+                  Address
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`${FORM_ID}-streetAddress`}
+                  placeholder="Enter address"
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="street-address"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
                 )}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="city"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "city"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>City</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter city" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="city"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`${FORM_ID}-city`}>City</FieldLabel>
+                <Input
+                  {...field}
+                  id={`${FORM_ID}-city`}
+                  placeholder="Enter city"
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="address-level2"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
                 )}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="postalCode"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "postalCode"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Postal Code</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter Postal Code" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="postalCode"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`${FORM_ID}-postalCode`}>
+                  Postal Code
+                </FieldLabel>
+                <Input
+                  {...field}
+                  id={`${FORM_ID}-postalCode`}
+                  placeholder="Enter postal code"
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="postal-code"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
                 )}
-              />
-            </div>
-            <div className="flex flex-col md:flex-row gap-5">
-              <FormField
-                control={form.control}
-                name="country"
-                render={({
-                  field,
-                }: {
-                  field: ControllerRenderProps<
-                    z.infer<typeof shippingAddressSchema>,
-                    "country"
-                  >;
-                }) => (
-                  <FormItem className="w-full">
-                    <FormLabel>Country</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter Country" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+              </Field>
+            )}
+          />
+
+          <Controller
+            name="country"
+            control={form.control}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor={`${FORM_ID}-country`}>Country</FieldLabel>
+                <Input
+                  {...field}
+                  id={`${FORM_ID}-country`}
+                  placeholder="Enter country"
+                  aria-invalid={fieldState.invalid}
+                  autoComplete="country-name"
+                />
+                {fieldState.invalid && (
+                  <FieldError errors={[fieldState.error]} />
                 )}
-              />
-            </div>
-            <div className="flex gap-2">
-              <Button type="submit" disabled={isPending}>
-                Continue
-                {isPending ? (
-                  <Loader className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                )}{" "}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-    </>
+              </Field>
+            )}
+          />
+        </FieldGroup>
+
+        <div className="flex gap-2">
+          <Button type="submit" disabled={isPending}>
+            Continue
+            {isPending ? (
+              <Loader className="ml-2 h-4 w-4 animate-spin" />
+            ) : (
+              <ArrowRight className="ml-2 h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </form>
+    </div>
   );
 };
 
