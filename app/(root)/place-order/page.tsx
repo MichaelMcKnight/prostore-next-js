@@ -17,6 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import Image from "next/image";
+import PlaceOrderForm from "@/components/place-order-form";
 
 export const metadata: Metadata = {
   title: "Place Order - My E-commerce Store",
@@ -130,6 +131,7 @@ const PlaceOrderPage = async () => {
                 <div>Total</div>
                 <div>${cart.totalPrice}</div>
               </div>
+              <PlaceOrderForm />
             </CardContent>
           </Card>
         </div>

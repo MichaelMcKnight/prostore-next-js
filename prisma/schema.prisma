@@ -28,7 +28,7 @@ model Product {
   isFeatured    Boolean @default(false)
   banner        String?
   createdAt     DateTime @default(now()) @db.Timestamp(6)
-  OrderItem     OrderItem[]
+  OrderItems    OrderItem[]
 }
 
 model User {
@@ -104,7 +104,6 @@ model Cart {
 model Order {
   id              String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   userId          String @db.Uuid
-  orderItems      Json[] @db.Json
   shippingAddress Json @db.Json
   paymentMethod   String
   paymentResult   Json? @db.Json
@@ -118,12 +117,12 @@ model Order {
   deliveredAt     DateTime? @db.Timestamp(6)
   createdAt       DateTime @default(now()) @db.Timestamp(6)
   user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
-  OrderItem       OrderItem[]
+  orderItems      OrderItem[]
 }
 
 model OrderItem {
-  productId String @db.Uuid
   orderId   String @db.Uuid
+  productId String @db.Uuid
   qty       Int
   price     Decimal @db.Decimal(12, 2)
   name      String
@@ -131,7 +130,5 @@ model OrderItem {
   image     String
   order     Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-
-  @@index([orderId], name: "orderitem_orderid_idx")
+  @@id([orderId, productId], map:"orderitems_orderId_productId_pkey")
 }
